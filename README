@@ -1,0 +1,7 @@
+gear-inches: calculate the gear inches available for a given set of chainring
+and cogs.
+
+Usage: gi wheel-diameter tire-size chainrings cogs
+
+(chainrings are a comma-separated list of chainrings, ie: 48,28)
+(cogs are a comma-separated list of cogs, ie: 12,14,16,19,21,26)
