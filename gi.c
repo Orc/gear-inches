@@ -50,6 +50,7 @@ gi(int chainring, int cog)
     return mm_gain / 25.4;
 }
 
+int /* Siiiiiigh, fine */
 main(argc, argv)
 char **argv;
 {
