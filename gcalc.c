@@ -76,9 +76,9 @@ error(char *fmt, ...)
 
     va_start(ptr,fmt);
 
-    errorsize += snprintf(EEND, ESIZE, "<p>");
+    errorsize += snprintf(EEND, ESIZE, "<li>");
     errorsize += vsnprintf(EEND, ESIZE, fmt, ptr);
-    errorsize += snprintf(EEND, ESIZE, "</p>");
+    errorsize += snprintf(EEND, ESIZE, "</li>");
     
     va_end(ptr);
 }
@@ -104,6 +104,18 @@ number(char *s)
 }
 
 
+char *
+getnzenv(char *variable)
+{
+    char *p = getenv(variable);
+
+    if ( p && (strlen(p) > 0) )
+	return p;
+
+    return 0;
+}
+
+
 void
 populate()
 {
@@ -118,38 +130,38 @@ populate()
     
     noerrors();
     
-    if ( !getenv("WWW_cgi") )
+    if ( !getnzenv("WWW_cgi") )
 	return;
 
-    if ( val = getenv("WWW_diameter") ) {
+    if ( val = getnzenv("WWW_diameter") ) {
 	for (i = 0; i < NR_DIAMETERS; i++ )
 	    if ( strcasecmp(val, diameters[i].alias) == 0 ) {
 		diameter = diameters[i].diameter;
 		break;
 	    }
 
-	if ( diameter == 0 ) {
+	if ( diameter == 0 )
 	    diameter = number(val);
-	    if ( diameter <= 0 )
-		error("wheel diameter [%s]?", val);
-	}
+	
+	if ( diameter < 0 )
+	    error("wheel diameter [%s]?", val);
     }
     else
 	error("no tire diameter?");
 
-    if ( val = getenv("WWW_tire") ) {
+    if ( val = getnzenv("WWW_tire") ) {
 	tire = number(val);
 
-	if ( tire <= 0 )
+	if ( tire < 0 )
 	    error("tire size [%s]?", val);
     }
     else
 	error("no tire size?");
     
-    for ( i = 0; i < MAX_CHAINRINGS; i++ ) {
+    for ( i = 0; i <= MAX_CHAINRINGS; i++ ) {
 	sprintf(variable, "WWW_ring%d", i);
 
-	if ( val = getenv(variable) ) {
+	if ( val = getnzenv(variable) ) {
 	    if ( (teeth = number(val)) < 0 )
 		error("chainring [%s]?", val);
 	    chainrings[i] = teeth;
@@ -163,10 +175,10 @@ populate()
     if ( nr_chainrings < 1 )
 	error("no chainrings?");
 
-    for ( i = 0; i < MAX_COGS; i++ ) {
+    for ( i = 0; i <= MAX_COGS; i++ ) {
 	sprintf(variable, "WWW_cog%d", i);
 
-	if ( val = getenv(variable) ) {
+	if ( val = getnzenv(variable) ) {
 	    if ( (teeth = number(val)) < 0 )
 		error("cog [%s]?", val);
 	    cogs[i] = teeth;
@@ -241,14 +253,14 @@ show_form()
     row();
     cell(1, "right", "Wheel Diameter");
     puts("    <td>");
-    input("diameter", 6, getenv("WWW_diameter"));
+    input("diameter", 6, getnzenv("WWW_diameter"));
     puts("    </td>");
     end();
 
     row();
     cell(1, "right", "Tire Size");
     puts("    <td>");
-    input("tire", 3, getenv("WWW_tire"));
+    input("tire", 3, getnzenv("WWW_tire"));
     puts("    </td>");
     end();
 
@@ -257,7 +269,7 @@ show_form()
     puts("    <td>");
     for (i=1; i<=MAX_CHAINRINGS; i++) {
 	sprintf(name, "WWW_ring%d", i);
-	input(name+4, 2, getenv(name));
+	input(name+4, 2, getnzenv(name));
     }
     puts("    </td>");
     end();
@@ -267,7 +279,7 @@ show_form()
     puts("    <td>");
     for (i=1; i<=MAX_COGS; i++) {
 	sprintf(name, "WWW_cog%d", i);
-	input(name+4, 2, getenv(name));
+	input(name+4, 2, getnzenv(name));
     }
     puts("    </td>");
     end();
@@ -300,7 +312,10 @@ char **argv;
 
     if ( has_errors() ) {
 	puts("</table>");
+	puts("<p>Oops?</p>");
+	puts("<ul>");
 	puts(errorbuf);
+	puts("</ul>");
     }
     else if ( nr_chainrings && nr_cogs ) {
 	row();
