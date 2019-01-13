@@ -102,13 +102,13 @@ char **argv;
     if ( diameter == 0 ) {
 	diameter = atoi(argv[1]);
 	if ( diameter <= 0 )
-	    error("%s: wheel diameter <%s>?", pgm, argv[1]);
+	    error("%s: wheel diameter [%s]?", pgm, argv[1]);
     }
 
     tire = atoi(argv[2]);
 
     if ( tire <= 0 )
-	error("%s: tire size <%s>?", pgm, argv[2]);
+	error("%s: tire size [%s]?", pgm, argv[2]);
 
     nr_chainrings = 0;
     for ( arg = strtok(argv[3], ","); arg; arg = strtok(0, ",") ) {
@@ -116,7 +116,7 @@ char **argv;
 	    error("%s: too many chainrings (%d max)", pgm, MAX_CHAINRINGS);
 	    
 	if ( (i = atoi(arg)) <= 0 ) {
-	    error("%s: chainring <%s>?", pgm, arg);
+	    error("%s: chainring [%s]?", pgm, arg);
 	    exit(1);
 	}
 	chainrings[nr_chainrings++] = i;
@@ -131,7 +131,7 @@ char **argv;
 	}
 	i = atoi(arg);
 	if ( i <= 0 ) {
-	    error("%s: cog <%s>?", pgm, arg);
+	    error("%s: cog [%s]?", pgm, arg);
 	    exit(1);
 	}
 	cogs[nr_cogs++] = i;
