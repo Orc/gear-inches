@@ -25,8 +25,8 @@ int tire;
 #define MAX_CHAINRINGS 10
 #define MAX_COGS 20
 
-int chainrings[MAX_CHAINRINGS];
-int cogs[MAX_CHAINRINGS];
+int chainrings[1+MAX_CHAINRINGS];
+int cogs[1+MAX_COGS];
 
 int nr_chainrings;
 int nr_cogs;
@@ -100,7 +100,9 @@ number(char *s)
     char *end;
     long value = strtoul(s, &end, 10);
 
-    if ( end == s || *end != 0 )
+    if ( end == s )
+	return 0;
+    else if ( *end ) 
 	return -1;
 
     return (int) value;
@@ -149,13 +151,13 @@ populate()
 	sprintf(variable, "WWW_ring%d", i);
 
 	if ( val = getenv(variable) ) {
-	    if ( (teeth = number(val)) <= 0 )
+	    if ( (teeth = number(val)) < 0 )
 		error("chainring [%s]?", val);
 	    chainrings[i] = teeth;
 	}
     }
 
-    for ( i = MAX_CHAINRINGS; i > 0 && chainrings[i-1] == 0; --i )
+    for ( i = MAX_CHAINRINGS; i > 0 && chainrings[i] <= 0; --i )
 	;
     nr_chainrings = i;
 
@@ -163,32 +165,35 @@ populate()
 	sprintf(variable, "WWW_cog%d", i);
 
 	if ( val = getenv(variable) ) {
-	    if ( (teeth = number(val)) <= 0 )
+	    if ( (teeth = number(val)) < 0 )
 		error("cog [%s]?", val);
 	    cogs[i] = teeth;
 	}
     }
 
-    for ( i = MAX_COGS; i > 0 && cogs[i-1] == 0; --i )
+    for ( i = MAX_COGS; i > 0 && cogs[i] <= 0; --i )
 	;
     nr_cogs = i;
 }
 
 
 void
-cell(int bold, char *align, char *fmt, ...)
+cell(int bold, char *align, char *text)
 {
-    va_list ptr;
-
-    va_start(ptr, fmt);
-
     printf("    <t%c", bold ? 'h' : 'd');
     if ( align )
 	printf(" align=\"%s\"", align);
-    putchar('>');
-    vprintf(fmt, ptr);
-    printf("</t%c>\n", bold ? 'h' : 'd');
-    va_end(ptr);
+    printf(">%s</t%c>\n", text, bold ? 'h' : 'd');
+}
+
+
+void
+cellnum(int bold, char *align, int value)
+{
+    printf("    <t%c", bold ? 'h' : 'd');
+    if ( align )
+	printf(" align=\"%s\"", align);
+    printf(">%d</t%c>\n", value, bold ? 'h' : 'd');
 }
 
 void
@@ -245,7 +250,7 @@ show_form()
     row();
     cell(1, "right", "Chainring(s)");
     puts("    <td>");
-    for (i=1; i<=3; i++) {
+    for (i=1; i<=MAX_CHAINRINGS; i++) {
 	sprintf(name, "WWW_ring%d", i);
 	input(name+4, 2, getenv(name));
     }
@@ -255,7 +260,7 @@ show_form()
     row();
     cell(1, "right", "Cog(s)");
     puts("    <td>");
-    for (i=1; i<=12; i++) {
+    for (i=1; i<=MAX_COGS; i++) {
 	sprintf(name, "WWW_cog%d", i);
 	input(name+4, 2, getenv(name));
     }
@@ -293,18 +298,28 @@ char **argv;
 	puts(errorbuf);
     }
     else  {
-	for ( i=0; i < nr_cogs; i++ ) {
+	row();
+	puts("    <td></td>");
+	puts("    <td><table style=\"border:1px solid black\">");
+	
+	row();
+	cell(0,0,"");
+	for ( i=1; i <= nr_chainrings; i++ )
+	    cellnum(1, 0, chainrings[i]);
+	end();
+	
+	for ( i=1; i <= nr_cogs; i++ ) {
 	    row();
-	    sprintf(strval, "%9d", cogs[i]);
-	    cell(1, 0, cogs[i] > 0 ? strval : "");
+	    cellnum(1, 0, cogs[i]);
 
-	    for ( j = 0; j < nr_chainrings; j++ ) {
-		if ( chainrings[j] && cogs[i] )
-		sprintf(strval, "%9d", gi(chainrings[j], cogs[i]));
-		cell(0, 0, strval);
-	    }
+	    for ( j = 1; j <= nr_chainrings; j++ )
+		cellnum(0, 0,  gi(chainrings[j], cogs[i]));
+	    
 	    end();
 	}
+	puts("    </table>");
+	end();
+	
 	puts("</table>");
     }
     puts("</form>");
