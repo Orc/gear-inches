@@ -1,7 +1,26 @@
 gear-inches: calculate the gear inches available for a given set of chainring
 and cogs.
 
-Usage: gi wheel-diameter tire-size chainrings cogs
 
-(chainrings are a comma-separated list of chainrings, ie: 48,28)
-(cogs are a comma-separated list of cogs, ie: 12,14,16,19,21,26)
+Implemented as two programs:
+
+
+gi:
+
+    Usage: gi wheel-diameter tire-size chainrings cogs
+
+    (chainrings are a comma-separated list of chainrings, ie: 48,28)
+    (cogs are a comma-separated list of cogs, ie: 12,14,16,19,21,26)
+
+
+    If called as 'webgi', if generates the output as a html table,
+    otherwise it's an ascii table.
+
+
+gcalc:
+
+    Usage http://..../gcalc.cgi
+
+    On the first call, it spits out a html form so you can fill in the
+    wheel size, etc;  submitting that form calls it again, and it gives
+    you that html form (populated) + a chart of gear inches.
