@@ -1,7 +1,7 @@
 /*
  * gear inch calculator
  *
- * usage: gi wheel tire chainring{,chainring} cog{,cog}
+ * usage: http://.../gcalc.cgi
  */
 
 #include <stdio.h>
@@ -15,9 +15,6 @@
 #include <limits.h>
 
 #define if(x)	if((x))
-
-
-char *usage = "wheel tire_size chainring{,chainring} cog{,cog}";
 
 int diameter;
 int tire;
@@ -50,12 +47,12 @@ struct { int diameter; char *alias; } diameters[] = {
 int
 gi(int chainring, int cog)
 {
-    float mm_gain = (diameter + tire);
+    float gear_mm = (diameter + tire);
 
-    mm_gain *= chainring;
-    mm_gain /= cog;
+    gear_mm *= chainring;
+    gear_mm /= cog;
 
-    return mm_gain / 25.4;
+    return gear_mm / 25.4;
 }
 
 
@@ -191,7 +188,7 @@ cell(int bold, char *align, char *text)
     printf("    <t%c", bold ? 'h' : 'd');
     if ( align )
 	printf(" align=\"%s\"", align);
-    printf(">%s</t%c>\n", text, bold ? 'h' : 'd');
+    printf(">%s</t%c>\n", text ? text : "", bold ? 'h' : 'd');
 }
 
 
@@ -305,13 +302,13 @@ char **argv;
 	puts("</table>");
 	puts(errorbuf);
     }
-    else  {
+    else if ( nr_chainrings && nr_cogs ) {
 	row();
 	puts("    <td></td>");
 	puts("    <td><table style=\"border:1px solid black\">");
 	
 	row();
-	cell(0,0,"");
+	cell(0,0,0);
 	for ( i=1; i <= nr_chainrings; i++ )
 	    cellnum(1, 0, chainrings[i]);
 	end();
@@ -330,6 +327,8 @@ char **argv;
 	
 	puts("</table>");
     }
+    else
+	puts("</table>");
     puts("</form>");
     puts("</body>");
     puts("</html>");

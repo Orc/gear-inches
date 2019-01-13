@@ -46,12 +46,12 @@ struct { int diameter; char *alias; } diameters[] = {
 int
 gi(int chainring, int cog)
 {
-    float mm_gain = (diameter + tire);
+    float gear_mm = (diameter + tire);
 
-    mm_gain *= chainring;
-    mm_gain /= cog;
+    gear_mm *= chainring;
+    gear_mm /= cog;
 
-    return mm_gain / 25.4;
+    return gear_mm / 25.4;
 }
 
 
