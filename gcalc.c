@@ -100,9 +100,7 @@ number(char *s)
     char *end;
     long value = strtoul(s, &end, 10);
 
-    if ( end == s )
-	return 0;
-    else if ( *end ) 
+    if ( *end ) 
 	return -1;
 
     return (int) value;
@@ -139,6 +137,8 @@ populate()
 		error("wheel diameter [%s]?", val);
 	}
     }
+    else
+	error("no tire diameter?");
 
     if ( val = getenv("WWW_tire") ) {
 	tire = number(val);
@@ -146,6 +146,8 @@ populate()
 	if ( tire <= 0 )
 	    error("tire size [%s]?", val);
     }
+    else
+	error("no tire size?");
     
     for ( i = 0; i < MAX_CHAINRINGS; i++ ) {
 	sprintf(variable, "WWW_ring%d", i);
@@ -161,6 +163,9 @@ populate()
 	;
     nr_chainrings = i;
 
+    if ( nr_chainrings < 1 )
+	error("no chainrings?");
+
     for ( i = 0; i < MAX_COGS; i++ ) {
 	sprintf(variable, "WWW_cog%d", i);
 
@@ -174,6 +179,9 @@ populate()
     for ( i = MAX_COGS; i > 0 && cogs[i] <= 0; --i )
 	;
     nr_cogs = i;
+
+    if ( nr_cogs < 1)
+	error("no cogs?");
 }
 
 
