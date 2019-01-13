@@ -22,8 +22,8 @@ char *usage = "wheel tire_size chainring{,chainring} cog{,cog}";
 int diameter;
 int tire;
 
-#define MAX_CHAINRINGS 10
-#define MAX_COGS 20
+#define MAX_CHAINRINGS 3
+#define MAX_COGS 12
 
 int chainrings[1+MAX_CHAINRINGS];
 int cogs[1+MAX_COGS];
