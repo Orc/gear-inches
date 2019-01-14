@@ -14,6 +14,8 @@
 #include <inttypes.h>
 #include <limits.h>
 
+#include "functions.h"
+
 #define if(x)	if((x))
 
 int diameter;
@@ -30,35 +32,6 @@ int nr_cogs;
 
 
 char iobuf[10240];
-
-struct { int diameter; char *alias; } diameters[] = {
-    { 630, "27" },
-    { 622, "700c" },
-    { 590, "650a" },
-    { 587, "700d" },
-    { 584, "650b" },
-    { 584, "27.5" },
-    { 571, "650c" },
-    { 559, "26" },
-} ;
-#define NR_DIAMETERS (sizeof diameters / sizeof diameters[0])
-
-
-int
-gi(int chainring, int cog)
-{
-    float gear_mm = (diameter + tire);
-
-
-    if ( cog <= 0 )
-	return EOF;
-
-    gear_mm *= chainring;
-    gear_mm /= cog;
-
-    return gear_mm / 25.4;
-}
-
 
 char errorbuf[2048];
 int errorsize;
@@ -138,17 +111,10 @@ populate()
 	return;
 
     if ( val = getnzenv("WWW_diameter") ) {
-	for (i = 0; i < NR_DIAMETERS; i++ )
-	    if ( strcasecmp(val, diameters[i].alias) == 0 ) {
-		diameter = diameters[i].diameter;
-		break;
-	    }
-
-	if ( diameter == 0 )
-	    diameter = number(val);
-	
-	if ( diameter < 0 )
+	if ( (diameter = wheel_diameter(val)) == EOF )
 	    error("wheel diameter [%s]?", val);
+	else if ( diameter == 0 )
+	    error("zero diameter wheel?");
     }
     else
 	error("no tire diameter?");
@@ -339,7 +305,7 @@ char **argv;
 	    cellnum(1, 0, cogs[i]);
 
 	    for ( j = 1; j <= nr_chainrings; j++ )
-		cellnum(0, "center",  gi(chainrings[j], cogs[i]));
+		cellnum(0, "center",  gear_inches(chainrings[j], cogs[i]));
 	    
 	    end();
 	}
