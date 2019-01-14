@@ -16,8 +16,6 @@
 
 #define if(x)	if((x))
 
-char outputbuffer[10240];
-
 int diameter;
 int tire;
 
@@ -37,7 +35,7 @@ struct { int diameter; char *alias; } diameters[] = {
     { 630, "27" },
     { 622, "700c" },
     { 590, "650a" },
-    { 487, "700d" },
+    { 587, "700d" },
     { 584, "650b" },
     { 584, "27.5" },
     { 571, "650c" },
@@ -215,7 +213,7 @@ cellnum(int bold, char *align, int value)
 	printf("-?-");
     else
 	printf("%d", value);
-    printf("</t%c>\n", value, bold ? 'h' : 'd');
+    printf("</t%c>\n", bold ? 'h' : 'd');
 }
 
 void
@@ -311,8 +309,6 @@ char **argv;
     void uncgi();
 
     uncgi();
-
-    setvbuf(stdout, outputbuffer, _IOFBF, sizeof outputbuffer);
 
     populate();
     show_form();
