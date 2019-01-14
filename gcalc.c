@@ -164,36 +164,30 @@ populate()
     else
 	error("no tire size?");
     
-    for ( i = 0; i <= MAX_CHAINRINGS; i++ ) {
+    for ( nr_chainrings = i = 0; i <= MAX_CHAINRINGS; i++ ) {
 	sprintf(variable, "WWW_ring%d", i);
 
 	if ( val = getnzenv(variable) ) {
 	    if ( (teeth = number(val)) < 0 )
 		error("chainring [%s]?", val);
-	    chainrings[i] = teeth;
+	    if ( teeth > 0 )
+		chainrings[++nr_chainrings] = teeth;
 	}
     }
-
-    for ( i = MAX_CHAINRINGS; i > 0 && chainrings[i] <= 0; --i )
-	;
-    nr_chainrings = i;
 
     if ( nr_chainrings < 1 )
 	error("no chainrings?");
 
-    for ( i = 0; i <= MAX_COGS; i++ ) {
+    for ( nr_cogs = i = 0; i <= MAX_COGS; i++ ) {
 	sprintf(variable, "WWW_cog%d", i);
 
 	if ( val = getnzenv(variable) ) {
 	    if ( (teeth = number(val)) < 0 )
 		error("cog [%s]?", val);
-	    cogs[i] = teeth;
+	    if ( teeth > 0 )
+		cogs[++nr_cogs] = teeth;
 	}
     }
-
-    for ( i = MAX_COGS; i > 0 && cogs[i] <= 0; --i )
-	;
-    nr_cogs = i;
 
     if ( nr_cogs < 1)
 	error("no cogs?");
