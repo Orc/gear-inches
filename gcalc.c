@@ -29,7 +29,7 @@ int nr_chainrings;
 int nr_cogs;
 
 
-int web = 0;
+char iobuf[10240];
 
 struct { int diameter; char *alias; } diameters[] = {
     { 630, "27" },
@@ -309,6 +309,9 @@ char **argv;
     void uncgi();
 
     uncgi();
+
+
+    setvbuf(stdout, iobuf, _IOFBF, sizeof iobuf);
 
     populate();
     show_form();
