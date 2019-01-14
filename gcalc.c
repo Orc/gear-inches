@@ -16,6 +16,8 @@
 
 #define if(x)	if((x))
 
+char outputbuffer[10240];
+
 int diameter;
 int tire;
 
@@ -48,6 +50,10 @@ int
 gi(int chainring, int cog)
 {
     float gear_mm = (diameter + tire);
+
+
+    if ( cog <= 0 )
+	return EOF;
 
     gear_mm *= chainring;
     gear_mm /= cog;
@@ -210,7 +216,12 @@ cellnum(int bold, char *align, int value)
     printf("    <t%c", bold ? 'h' : 'd');
     if ( align )
 	printf(" align=\"%s\"", align);
-    printf(">%d</t%c>\n", value, bold ? 'h' : 'd');
+    putchar('>');
+    if ( value == EOF )
+	printf("-?-");
+    else
+	printf("%d", value);
+    printf("</t%c>\n", value, bold ? 'h' : 'd');
 }
 
 void
@@ -307,6 +318,8 @@ char **argv;
 
     uncgi();
 
+    setvbuf(stdout, outputbuffer, _IOFBF, sizeof outputbuffer);
+
     populate();
     show_form();
 
@@ -333,7 +346,7 @@ char **argv;
 	    cellnum(1, 0, cogs[i]);
 
 	    for ( j = 1; j <= nr_chainrings; j++ )
-		cellnum(0, 0,  gi(chainrings[j], cogs[i]));
+		cellnum(0, "center",  gi(chainrings[j], cogs[i]));
 	    
 	    end();
 	}
