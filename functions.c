@@ -70,7 +70,7 @@ wheel_diameter(char *s)
 	for (sfx=e; isspace(*sfx); ++sfx)
 	    ;
 	
-	if ( strcmp(sfx, "in") == 0 ) {
+	if ( strcmp(sfx, "inch") == 0 ) {
 	    *e = 0;
 
 	    if ( (i = lookup(s, inches, NR_INCHES)) != EOF )
