@@ -59,6 +59,7 @@ wheel_diameter(char *s)
     int i;
     char *e;
     char *sfx;
+    char pfx[10];
 
 
     if ( (i = lookup(s, diameters, NR_DIAMETERS)) != EOF )
@@ -67,19 +68,23 @@ wheel_diameter(char *s)
     i = strtoul(s,&e,10);
 
     if ( *e ) {
+
+	if ( e-s >= sizeof pfx )
+	    return EOF;
+
+	strncpy(pfx, s, e-s);
+	pfx[e-s] = 0;
+	
+	
 	for (sfx=e; isspace(*sfx); ++sfx)
 	    ;
 	
 	if ( strcmp(sfx, "inch") == 0 ) {
-	    *e = 0;
-
-	    if ( (i = lookup(s, inches, NR_INCHES)) != EOF )
+	    if ( (i = lookup(pfx, inches, NR_INCHES)) != EOF )
 		return inches[i].diameter;
 	}
 	else if ( strcmp(sfx, "\"") == 0 ) {
-	    *e = 0;
-
-	    if ( (i=lookup(s,inches, NR_INCHES)) != EOF )
+	    if ( (i=lookup(pfx,inches, NR_INCHES)) != EOF )
 		return inches[i].diameter;
 	}
 	else if ( strcmp(sfx, "mm") != 0 ) {
